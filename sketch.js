@@ -101,6 +101,10 @@ function draw() {
   selectedLevel = parseInt(coalRadio.value());
   coalRate = COAL_RATE_MAP[selectedLevel]
   Ugol = Ugol - (coalRate * deltaTime / 1000)
+  if (Ugol <= 0) {
+    Ugol = 0
+    coalRadio.selected('0')
+  }
 
   // --- Параметры Блока Температуры (Верхний Центр) ---
   const boxWidth = 110;
@@ -144,20 +148,6 @@ function draw() {
   // Сброс выравнивания
   textAlign(LEFT, TOP);
 
-// --- ОТЛАДКА: СКОРОСТЬ КОНВЕЙЕРА ---
-    fill(0); // Серый цвет для дебаг-текста
-    textSize(20);
-    
-    // Получаем текущую скорость из карты (например, 5, 10, 20)
-    // let debugConsumptionRate = COAL_RATE_MAP[coalFeedLevel];
-    
-    // Выводим выбранный уровень (0-4)
-    // text(`Уровень конвейера (Level): ${coalFeedLevel}`, 100, 300); 
-    // Выводим фактическую скорость потребления (в ед/сек)
-    // text(`Расход (ед/сек): ${debugConsumptionRate}`, 100, 350); 
-    
-    // Сброс выравнивания
-    textAlign(RIGHT, top);
 
 
 
