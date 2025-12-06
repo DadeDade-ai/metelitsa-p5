@@ -2,7 +2,6 @@
 // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 // =================================================================
 let Ugol = 1000;          // Количество угля (единиц)
-
 let streetTemp = -100;     // Температура на улице (°C)
 const TEMP_MIN = -100;     // Нижняя граница для цветовой карты
 const TEMP_MAX = 0;      // Верхняя граница для цветовой карты
@@ -25,12 +24,13 @@ let gameDays = 1; // Начинаем с первого дня
 
 
 // Управление Топкой
-let coalFeedLevel = 0; // 0 - выключено, 1-4 - уровни скорости
-let airValve = 50;             
+let selectedLevel = 0; // 0 - выключено, 1-4 - уровни скорости 
+let coalRate = 0         
 const COAL_RATE_MAP = [0, 1, 5, 10, 20]; // 0 ед/с, 1 ед/с, 5 ед/с, 10 ед/с, 20 ед/с
+
 // UI-элементы
 let coalRadio; // Объект для хранения радиокнопок
-
+let consumptionRatePerSec = 0;
 
 
 
@@ -40,7 +40,7 @@ let coalRadio; // Объект для хранения радиокнопок
 
 // разовая инициализация всего
 function setup() {
-  createCanvas(900, 700);
+  createCanvas(1200, 700);
   background(100);
   colorMode(HSB, 360, 100, 100); // пеерключаемся в режим окрашния HSB
 
@@ -56,7 +56,7 @@ coalRadio.option('4', 'Ур. 4 (20 ед/с)');
   
   coalRadio.position(50, 100); // Позиция блока
   coalRadio.selected('0'); // Выбираем начальное значение: Выкл (0)
-  coalRadio.style('width', '180px'); // Добавляем базовый стиль для вертикального размещения
+  coalRadio.style('width', '800px'); // Добавляем базовый стиль для вертикального размещения
 }
 
 
@@ -98,41 +98,9 @@ function draw() {
 
   
 // --- ЛОГИКА КОНВЕЙЕРА (ОБНОВЛЕННАЯ, БОЛЕЕ НАДЕЖНАЯ) ---
-    let selectedValue = coalRadio.value();
-    let currentLevel = 0; 
-
-    // Используем parseInt() для безопасной конвертации. 
-    // Если selectedValue не является числом, parseInt вернет NaN.
-    let parsedLevel = parseInt(selectedValue);
-
-    // Проверяем, что результат конвертации не NaN и что он в пределах наших уровней (0-4)
-    if (!isNaN(parsedLevel) && parsedLevel >= 0 && parsedLevel <= 4) {
-        currentLevel = parsedLevel;
-    } 
-    // Если NaN или вне диапазона, currentLevel останется 0
-
-    // Обновляем глобальную переменную
-//    coalFeedLevel = currentLevel; 
-    coalFeedLevel = int(selectedValue);
-    
-    // ----------------------------------------------------------------
-    // 2. ЛОГИКА ПОТРЕБЛЕНИЯ УГЛЯ
- //   let consumptionRatePerSec = COAL_RATE_MAP[coalFeedLevel];
-   // Защита от сбоя
-let consumptionRatePerSec = 0; // Значение по умолчанию
-
-// Проверяем, что coalFeedLevel - это число, и оно внутри допустимого диапазона (0-4)
-if (coalFeedLevel >= 0 && coalFeedLevel < COAL_RATE_MAP.length) {
-    consumptionRatePerSec = COAL_RATE_MAP[coalFeedLevel];
-} else {
-    // Если произошла ошибка, принудительно ставим уровень 0
-    console.log("Ошибка индекса:", coalFeedLevel); // Покажет проблему в консоли браузера (F12)
-    coalFeedLevel = 0;
-    consumptionRatePerSec = 0;
-}
-  
-  // =========================================================================
-  // =========================================================================
+  selectedLevel = parseInt(coalRadio.value());
+  coalRate = COAL_RATE_MAP[selectedLevel]
+  Ugol = Ugol - (coalRate * deltaTime / 1000)
 
   // --- Параметры Блока Температуры (Верхний Центр) ---
   const boxWidth = 110;
@@ -147,7 +115,7 @@ if (coalFeedLevel >= 0 && coalFeedLevel < COAL_RATE_MAP.length) {
   let tempHue = map(streetTemp, TEMP_MIN, TEMP_MAX, 240, 0); 
   
   // 2. Рисуем скругленный КВАДРАТ/БЛОК (он рисуется ПЕРВЫМ)
-//  noStroke(); // Убираем рамку
+  noStroke(); // Убираем рамку
   fill(tempHue, 80, 80);
   rect(boxX, boxY, boxWidth, boxHeight, borderRadius); 
   
@@ -181,12 +149,12 @@ if (coalFeedLevel >= 0 && coalFeedLevel < COAL_RATE_MAP.length) {
     textSize(20);
     
     // Получаем текущую скорость из карты (например, 5, 10, 20)
-    let debugConsumptionRate = COAL_RATE_MAP[coalFeedLevel];
+    // let debugConsumptionRate = COAL_RATE_MAP[coalFeedLevel];
     
     // Выводим выбранный уровень (0-4)
-    text(`Уровень конвейера (Level): ${coalFeedLevel}`, 100, 300); 
+    // text(`Уровень конвейера (Level): ${coalFeedLevel}`, 100, 300); 
     // Выводим фактическую скорость потребления (в ед/сек)
-    text(`Расход (ед/сек): ${debugConsumptionRate}`, 100, 350); 
+    // text(`Расход (ед/сек): ${debugConsumptionRate}`, 100, 350); 
     
     // Сброс выравнивания
     textAlign(RIGHT, top);
