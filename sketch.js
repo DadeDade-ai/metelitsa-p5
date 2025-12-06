@@ -35,6 +35,15 @@ let consumptionRatePerSec = 0;
 // air valve
 let airValve = 50;
 let airValveSlider
+let rawSteam = 0;
+
+function calculateRawSteam(coalRate, airValveValue, deltaTime) {
+  return (coalRate * (airValveValue / 100)) * (deltaTime / 1000);
+}
+
+function RoundToFourDig(n) {
+  return Math.round(n * 10000) / 10000
+}
 
 
 
@@ -124,6 +133,10 @@ function draw() {
 
   // Air valve logic
   airValve = airValveSlider.value()
+
+  // RawSteam generation
+  rawSteam = RoundToFourDig(rawSteam + calculateRawSteam(coalRate, airValve, deltaTime))
+  console.log(rawSteam)
 
   // --- Параметры Блока Температуры (Верхний Центр) ---
   const boxWidth = 110;
