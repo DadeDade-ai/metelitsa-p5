@@ -1,0 +1,10 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  /* Для стиля Frostpunk можно добавить фон */
+  background-color: #333; 
+}
+
+canvas {
+  display: block; /* Убирает лишние пробелы под холстом */
+}
