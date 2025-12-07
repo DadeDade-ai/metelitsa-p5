@@ -34,7 +34,13 @@ let coalRadio; // Объект для хранения радиокнопок
 let consumptionRatePerSec = 0;
 
 
-// === КЛАПАН ПОДАЧИ КИСЛОРОДА ===
+// === КЛАПАН ПОДАЧИ КИСЛОРОДА(для угля) ===
 let airValve = 50;
 let airValveSlider
 let rawSteam = 0;
+
+
+// === ГАЗОВОЕ ОТОПЛЕНИЕ ===
+let gas = 200;
+
+
