@@ -1,11 +1,11 @@
 
 
 // FUNCTION 
-function calculateRawSteam(coalRate, airValveValue, deltaTime) {
+function calculateRawSteam(coalRate, airValveValue, deltaTime) { // просчет генерации rawsteam
   return (coalRate * (airValveValue / 100)) * (deltaTime / 1000);
 }
 
-function RoundToFourDig(n) {
+function RoundToFourDig(n) { // округление генерации rawsteam
   return Math.round(n * 10000) / 10000
 }
 
