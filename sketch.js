@@ -37,6 +37,8 @@ let airValve = 50;
 let airValveSlider
 let rawSteam = 0;
 
+
+// FUNCTION 
 function calculateRawSteam(coalRate, airValveValue, deltaTime) {
   return (coalRate * (airValveValue / 100)) * (deltaTime / 1000);
 }
