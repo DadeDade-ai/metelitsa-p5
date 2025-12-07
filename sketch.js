@@ -32,6 +32,21 @@ const COAL_RATE_MAP = [0, 1, 5, 10, 20]; // 0 ед/с, 1 ед/с, 5 ед/с, 10 
 let coalRadio; // Объект для хранения радиокнопок
 let consumptionRatePerSec = 0;
 
+// air valve
+let airValve = 50;
+let airValveSlider
+let rawSteam = 0;
+
+
+// FUNCTION 
+function calculateRawSteam(coalRate, airValveValue, deltaTime) {
+  return (coalRate * (airValveValue / 100)) * (deltaTime / 1000);
+}
+
+function RoundToFourDig(n) {
+  return Math.round(n * 10000) / 10000
+}
+
 
 
 // =================================================================
@@ -48,11 +63,22 @@ function setup() {
   coalRadio = createRadio();
   
   // .option('Отображаемый текст', значение)
-coalRadio.option('0', 'Выкл (0 ед/с)'); // Значение '0', подпись 'Выкл...'
-coalRadio.option('1', 'Ур. 1 (1 ед/с)');
-coalRadio.option('2', 'Ур. 2 (5 ед/с)');
-coalRadio.option('3', 'Ур. 3 (10 ед/с)');
-coalRadio.option('4', 'Ур. 4 (20 ед/с)');
+  coalRadio.option('0', 'Выкл (0 ед/с)'); // Значение '0', подпись 'Выкл...'
+  coalRadio.option('1', 'Ур. 1 (1 ед/с)');
+  coalRadio.option('2', 'Ур. 2 (5 ед/с)');
+  coalRadio.option('3', 'Ур. 3 (10 ед/с)');
+  coalRadio.option('4', 'Ур. 4 (20 ед/с)');
+
+  // creating air valve slider
+  airValveSlider = createSlider(1, 100, airValve)
+  // 1. Позиционируем и поворачиваем (на 270 градусов, чтобы был вертикальным)
+  airValveSlider.position(60, 200); // Сдвигаем вниз и вправо
+  airValveSlider.style('width', '250px'); // Длина рычага
+  // airValveSlider.style('transform', 'rotate(270deg)'); 
+
+  // 2. Базовая стилизация (CSS):
+  airValveSlider.style('background', '#E74C3C'); // Красный фон
+  airValveSlider.style('border-radius', '5px');
   
   coalRadio.position(50, 100); // Позиция блока
   coalRadio.selected('0'); // Выбираем начальное значение: Выкл (0)
@@ -66,7 +92,7 @@ coalRadio.option('4', 'Ур. 4 (20 ед/с)');
 function draw() {
   background(220); // Очищаем холст
 
-// --- ЛОГИКА ПОПОЛНЕНИЯ УГЛЯ ---
+  // --- ЛОГИКА ПОПОЛНЕНИЯ УГЛЯ ---
   // deltaTime - время, прошедшее с предыдущего кадра (в мс)
   timeSinceReplenish += deltaTime; 
 
@@ -90,21 +116,29 @@ function draw() {
   let minutesInCurrentDay = totalGameMinutes % (24 * 60);
   let currentHours = floor(minutesInCurrentDay / 60); // Часы (0-23)
   let currentMinutes = floor(minutesInCurrentDay % 60); // Минуты (0-59)
-
   // 3. Форматирование (добавляем ведущий ноль, например 09:05)
   // Мы используем встроенный метод JS padStart()
   let formattedHours = String(currentHours).padStart(2, '0');
   let formattedMinutes = String(currentMinutes).padStart(2, '0');
 
   
-// --- ЛОГИКА КОНВЕЙЕРА ---
+  // --- ЛОГИКА КОНВЕЙЕРА ---
+  //Coal consumption
   selectedLevel = parseInt(coalRadio.value());
   coalRate = COAL_RATE_MAP[selectedLevel]
   Ugol = Ugol - (coalRate * deltaTime / 1000)
+  // Ugol limit on zero
   if (Ugol <= 0) {
-    Ugol = 0
-    coalRadio.selected('0')
+    Ugol = 0;
+    coalRadio.selected('0');
   }
+
+  // Air valve logic
+  airValve = airValveSlider.value()
+
+  // RawSteam generation
+  rawSteam = RoundToFourDig(rawSteam + calculateRawSteam(coalRate, airValve, deltaTime))
+  console.log(rawSteam)
 
   // --- Параметры Блока Температуры (Верхний Центр) ---
   const boxWidth = 110;
@@ -135,6 +169,7 @@ function draw() {
   // ============================================
   
   text(`⬛Склад угля: ${nfc(Ugol, 1)}кг`, 150, 50);
+  text(`Клапан подачи кислорода - ${airValve}%`, 200, 180);
  
 
   // 4. Вывод текста (Верхний правый угол)
@@ -147,10 +182,6 @@ function draw() {
 
   // Сброс выравнивания
   textAlign(LEFT, TOP);
-
-
-
-
 }
 
 
