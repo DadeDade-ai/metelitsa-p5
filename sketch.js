@@ -97,7 +97,7 @@ function draw() {
   let formattedMinutes = String(currentMinutes).padStart(2, '0');
 
   
-// --- ЛОГИКА КОНВЕЙЕРА (ОБНОВЛЕННАЯ, БОЛЕЕ НАДЕЖНАЯ) ---
+// --- ЛОГИКА КОНВЕЙЕРА ---
   selectedLevel = parseInt(coalRadio.value());
   coalRate = COAL_RATE_MAP[selectedLevel]
   Ugol = Ugol - (coalRate * deltaTime / 1000)
